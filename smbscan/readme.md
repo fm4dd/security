@@ -1,3 +1,4 @@
+```
 root@lts1404:/home/fm # java -cp .:../dist/jcifs.jar smbscan FMDOM2 frank4dd mypass 192.168.10 20 22 csv wt
 Received arg csv - Using CSV format with separator: ,
 Received arg wt - Adding write tests.
@@ -14,4 +15,4 @@ TEST: 192.168.10.21 Ping: OK TCP-445: OK NAME: JPNRSV001 DOMAIN: FMDOM2 SHARE: S
  SHARE: E$ EXPORT: No Access FOLDER: No Access READ: No Read Access WRITE: test1450080476336.txt No Write Access
  SHARE: ADMIN$ EXPORT: No Access FOLDER: No Access READ: No Read Access WRITE: test1450080476604.txt No Write Access
  SHARE: NETLOGON EXPORT: No Access FOLDER: analyzed 9 ACE READ: checked 5/173 share entries WRITE: test1450080477023.txt No Write Access
-
+```
