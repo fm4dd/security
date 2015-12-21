@@ -7,7 +7,7 @@ http://fm4dd.com/security/
 
 * * *
 
-[check-console-defaults](check-console-defaults): One potentially fatal mistake is to connect the server's management console into an end-user reachable network, unconfigured and without further protection. It may sound incredible, but in a real-life case, several dozens of PRD servers turned out to be accessible that way.  This script automates the large-scale identification of console ports running on vendor defaults.
+[check-console-defaults](check-console-defaults): One potentially fatal mistake is to connect the server's management console into an end-user reachable network, unconfigured and without further protection. It may sound incredible, but in a real-life case, several dozens of PRD servers turned out to be accessible that way.  This Perl script automates the large-scale identification of console ports running on vendor defaults.
 
 <pre>D:\Code> check_console_defaults.pl 192.168.24 1 254
 ...
@@ -22,7 +22,7 @@ Checking 192.168.24.7... Host does not exist.
 
 * * *
 
-[domain_userlist](domain_userlist): By default, Windows allows allows any domain user to retrieve full Windows Domain information about all users, groups, and other AD information. By scripting, we can obtain almost all information available in Active Directory. This script downloads the full list of Domain users, together with their password settings into a CSV file for easy user sorting. It works for acount extraction within the local domain and with trusted domains, common in larger environments.
+[domain_userlist](domain_userlist): By default, Windows allows allows any domain user to retrieve full Windows Domain information about all users, groups, and other AD information. By scripting, we can obtain almost all information available in Active Directory. This Javascript program downloads the full list of Domain users, together with their password settings into a CSV file for easy user sorting. It works for acount extraction within the local domain and with trusted domains, common in larger environments.
 
 ![](domain_userlist/images/domain-userlist-csvfile1.png)
 ![](domain_userlist/images/domain-userlist-csvfile2.png)
