@@ -22,10 +22,10 @@ Checking 192.168.24.7... Host does not exist.
 
 * * *
 
-[domain-userlist](domain-userlist): By default, Windows allows allows any domain user to retrieve full Windows Domain information about all users, groups, and other AD information. By scripting, we can obtain almost all information available in Active Directory. This script downloads the full list of Domain users, together with their password settings into a CSV file for easy user sorting. It works for acount extraction within the local domain and with trusted domains, common in larger environments.
+[domain_userlist](domain_userlist): By default, Windows allows allows any domain user to retrieve full Windows Domain information about all users, groups, and other AD information. By scripting, we can obtain almost all information available in Active Directory. This script downloads the full list of Domain users, together with their password settings into a CSV file for easy user sorting. It works for acount extraction within the local domain and with trusted domains, common in larger environments.
 
-![](domain-userlist/images/domain-userlist-csvfile1.png)
-![](domain-userlist/images/domain-userlist-csvfile2.png)
+![](domain_userlist/images/domain-userlist-csvfile1.png)
+![](domain_userlist/images/domain-userlist-csvfile2.png)
 
 ### smbscan
 
