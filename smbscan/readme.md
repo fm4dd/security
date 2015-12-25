@@ -77,4 +77,4 @@ The results file shown in Excel:
 
 #### Notes:
 
-The pprogram's .java source code file needs to be compiled into Java bytecode before it can be used, i.e. by calling:  _javac -cp .:../dist/jcifs.jar smbscan.java_.
+The program's .java source code file needs to be compiled into Java bytecode before it can be used, i.e. by calling:  _javac -cp .:../dist/jcifs.jar smbscan.java_.
