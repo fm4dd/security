@@ -12,7 +12,7 @@ This program checks for reachable Windows network shares on networked systems. I
 
 The smbscan Java program uses the jcifs Java libary (https://jcifs.samba.org/) for the low-level SMB functions. It can run a check for hosts in network ranges up to class-C (e.g. x.y.z.1-254) by counting up the last octet.
 
-Smbscan first checks if hosts are pingeable, and then tries to connect via tcp port 445. If successful, it lists up reachable shares together with directories if they are readable. Results are written into a file, the Optional parameter csv formatsthe output for easy import into MS Excel.
+Smbscan first checks if hosts are pingeable, and then tries to connect via tcp port 445. If successful, it lists up reachable shares together with directories if they are readable. Results are written into a file, the optional parameter csv formats the output for easy import into MS Excel.
 
 #### Usage:
 
