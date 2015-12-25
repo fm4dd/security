@@ -36,16 +36,16 @@ Smbscan first checks if hosts are pingeable, and then tries to connect via tcp p
 [network]  
       The first three octets of a IP address, e.g. 192.168.1.
 
-[start-ip]  
+[start-ip]   
       The first host to check. the program will add this number it to the network octets to start the loop. "1" will translate together with the network 192.168.1 to 192.168.1.1 as the first IP to be checked.
 
-[end-ip] 
+[end-ip]  
       The last host to check. The program adds this number to the network octets to stop the loop. "254" will  translate together with the network 192.168.1 to 192.168.1.254 as the last IP to be checked.
 
-[csv]
+[csv]  
       Optional - this parameter formats the output as csv, and the resulting list can be viewed easily with MS Excel. If ot present, the output file will be a plaintext logfile.
 
-[wt]
+[wt]  
       Optional - this parameter enables the write test. If ot present, the program tries to write a temporary test file into the share, and deletes it afterwards. 
 
 #### Usage Example:
@@ -73,7 +73,7 @@ TEST: 192.168.10.21 Ping: OK TCP-445: OK NAME: JPNRSV001 DOMAIN: FMDOM2 SHARE: S
 
 The results file shown in Excel:
 
-![](smbscan/images/smbscan-example.png)
+![](images/smbscan-example.png)
 
 #### Notes:
 
