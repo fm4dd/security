@@ -8,7 +8,7 @@ Copyright (c) 2013 Frank4DD<support[at]frank4dd.com>
 
 * * *
 
-This script connects to domain controllers through ldap and downloads the full list of Domain users, together with their password settings into a CSV file for easy user sorting. It works for acount extraction within the local domain, and with trusted domains, common in larger environments.
+This script connects to domain controllers through LDAP and downloads the full list of Domain users, together with their password settings into a CSV file for easy user sorting. It works for acount extraction within the local domain, and with trusted domains, common in larger environments.
 
 Using CSV and Excel is handy to drill down on users excempted from password change, to check when a password changed, or to see if a account has been disabled timely.
 
