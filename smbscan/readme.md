@@ -78,3 +78,5 @@ The results file shown in Excel:
 #### Notes:
 
 The program's .java source code file needs to be compiled into Java bytecode before it can be used, i.e. by calling:  _javac -cp .:../dist/jcifs.jar smbscan.java_.
+
+See also http://fm4dd.com/security/check-windows-network-shares.htm

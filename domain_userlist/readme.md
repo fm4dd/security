@@ -60,3 +60,5 @@ The results file shown in Excel:
 
 Extracting 50,000 accounts takes a bit since windows limits bulk retrieval of records (Windows 2003: 1000 records, 5000 since Windows 2008).
 This is controlled through the __MaxPageSize__ value.
+
+See also http://fm4dd.com/security/check-id-active-directory-part2.htm
