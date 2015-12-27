@@ -34,7 +34,7 @@ public class smbscan {
 
   /* ------------------------------------------------------------ *
    * Before checking for shares, we first ping the host to        *
-   * ensure it exists. Otherwise, the web check 'hangs' and waits *
+   * ensure it exists. Otherwise, the smb check 'hangs' and waits *
    * with a long, hard to interrupt timeout. Our ping timeout is  *
    * set to 1 second only, providing a fast scan (ptimeout = 1;). *
    * ------------------------------------------------------------ */
