@@ -1,5 +1,5 @@
 '===========================================================================
-' domain_userlist.vbs v1.1   @2013 by Frank4dd http://fm4dd.com/programming
+' domain_userlist.vbs v1.1   @2013 by Frank4dd http://fm4dd.com/security
 '
 ' Description: This script collects all active and disabled accounts from a
 '              selected active directory domain. The results are saved into

@@ -43,10 +43,10 @@ Smbscan first checks if hosts are pingeable, and then tries to connect via tcp p
       The last host to check. The program adds this number to the network octets to stop the loop. "254" will  translate together with the network 192.168.1 to 192.168.1.254 as the last IP to be checked.
 
 [csv]  
-      Optional - this parameter formats the output as csv, and the resulting list can be viewed easily with MS Excel. If ot present, the output file will be a plaintext logfile.
+      Optional - this parameter formats the output as csv, and the resulting list can be viewed easily with MS Excel. If not present, the output file will be a plaintext logfile.
 
 [wt]  
-      Optional - this parameter enables the write test. If ot present, the program tries to write a temporary test file into the share, and deletes it afterwards. 
+      Optional - this parameter enables the write test. If present, the program tries to write a temporary test file into the share, and deletes it afterwards. 
 
 #### Usage Example:
 
