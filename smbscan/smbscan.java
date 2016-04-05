@@ -17,6 +17,7 @@
  *                                                                *
  * Compile: javac -cp .:../dist/jcifs.jar smbscan.java            * 
  * -------------------------------------------------------------- */
+import jcifs.*;
 import jcifs.smb.*;
 import jcifs.util.*;
 import jcifs.netbios.*;
@@ -27,14 +28,15 @@ import java.net.*;
 public class smbscan {
    static int csv = 0;
    static int wt = 0;
+   static int vb = 0;
    static String separator = ",";
    static String hostline;
-   static int ping_timeout = 1000;
-   static int smb_timeout = 1000;
+   static int ping_timeout = 2000;
+   static int smb_timeout = 2000;
 
   /* ------------------------------------------------------------ *
    * Before checking for shares, we first ping the host to        *
-   * ensure it exists. Otherwise, the smb check 'hangs' and waits *
+   * ensure it exists. Otherwise, the web check 'hangs' and waits *
    * with a long, hard to interrupt timeout. Our ping timeout is  *
    * set to 1 second only, providing a fast scan (ptimeout = 1;). *
    * ------------------------------------------------------------ */
@@ -97,17 +99,23 @@ public class smbscan {
   public static boolean smbresolve(String ip) throws IOException {
     String w_name = "";
     String domain = "";
+    IOException empty = new IOException();
     try { 
       NbtAddress[] addrs = NbtAddress.getAllByAddress(ip);
+      if(addrs.length == 0) throw empty;
       w_name = addrs[0].getHostName();
       domain = addrs[1].getHostName();
-      //for(int i=0; i<addrs.length; i++) {System.out.println(addrs[i]);}
-      System.out.print( "NAME: "+w_name+" DOMAIN: "+domain );
+      /* For verbose output, list all received name infos */
+      if(vb==1) {
+        System.out.println();
+        for(int i=0; i<addrs.length; i++) {System.out.println(addrs[i]);}
+      }
+      System.out.print( "NAME: "+w_name+" DOMAIN: "+domain+"\n");
       if(csv==1) { hostline = hostline+w_name+separator+domain; }
       else       { hostline = hostline+"NAME: "+w_name+" DOMAIN: "+domain; }
       return true;
     }
-    catch (UnknownHostException e) {
+    catch (IOException e) {
       System.out.print( "NAME: Unknown DOMAIN: Unknown " );
       if(csv==1) { hostline = hostline+"Unknown"+separator+"Unknown"; }
       else       { hostline = hostline+"NAME: Unknown DOMAIN: Unknown "; }
@@ -119,10 +127,10 @@ public class smbscan {
    * Print the programs usage, and a example with expected args.  *
    * ------------------------------------------------------------ */
   public static void usage() {
-    System.out.println( "Usage: java -cp ../jcifs-1.3.18.jar;. smbscan <domain> <user> <pass> <network-base> <start_ip> <end_ip> [csv] [wt]\n" );
+    System.out.println( "Usage: java -cp ../jcifs-1.3.18.jar;. smbscan <domain> <user> <pass> <network-base> <start_ip> <end_ip> [csv] [wt] vb]\n" );
     System.out.println( "Example: java -cp ../jcifs-1.3.18.jar;. smbscan WORKGROUP user1 pass1 192.168.1 20 44" ); 
     System.out.println( "This will run the check on these IP's: 192.168.1.20-44." );
-    System.out.println( "The optional parameter 'csv' creates Excel-ready output, while 'wt' does an extra write test." );
+    System.out.println( "The optional parameter 'csv' creates Excel-ready output, 'wt' does an extra write test, and 'vb' creates debug output." );
     System.out.println( "The write test tries to create a small text file and deletes it." );
   }
   
@@ -179,6 +187,12 @@ public class smbscan {
     if (argv.length > 7 && argv[7].equals("wt")) {
       wt = 1;
       System.out.println( "Received arg "+argv[7]+" - Adding write tests.");
+    }
+    
+    if ( (argv.length > 6 && argv[6].equals("vb")) ||
+         (argv.length > 7 && argv[7].equals("vb")) ) {
+      vb = 1;
+      System.out.println( "Received arg vb - showing verbose debug output.");
     }
 
     String domain=argv[0];
@@ -268,16 +282,16 @@ public class smbscan {
         obj_list = smb_obj.listFiles();
       }
       catch( SmbAuthException sae ) {
-        System.out.print( " SHARE: SmbAuthException\n" );
-        if(csv==1) { bw.write(hostline+separator+"SmbAuthException\n"); }
-        else       { bw.write(hostline+" SHARE: SmbAuthException\n"); }
+        System.out.print( " SHARE: "+sae.getMessage()+"\n" );
+        if(csv==1) { bw.write(hostline+separator+sae.getMessage()+"\n"); }
+        else       { bw.write(hostline+" SHARE: "+sae.getMessage()+"\n"); }
         host++;
         continue;
       } 
       catch( SmbException se ) {
-        System.out.print( " SHARE: SmbException\n" );
-        if(csv==1) { bw.write(hostline+separator+"SmbException\n"); }
-        else       { bw.write(hostline+" SHARE: SmbException\n"); }
+        System.out.print( " SHARE: "+se.getMessage()+"\n" );
+        if(csv==1) { bw.write(hostline+separator+se.getMessage()+"\n"); }
+        else       { bw.write(hostline+" SHARE: "+se.getMessage()+"\n"); }
         host++;
         continue;
       }
@@ -343,10 +357,8 @@ public class smbscan {
           } // end try
           catch (Exception e) {
             export_sec = "No Access";
-            System.out.print(" EXPORT: No Access");
+            System.out.print(" EXPORT: "+export_sec);
           }
-         
-
     
           /* ------------------------------------------------------------ *
            * Check share folder permissions ACL, if readable              *
@@ -383,7 +395,7 @@ public class smbscan {
           }
           catch (Exception e) { 
             folder_sec = "No Access"; 
-            System.out.print(" FOLDER: No Access");
+            System.out.print(" FOLDER: "+folder_sec);
          } 
           
           /* ------------------------------------------------------------ *
@@ -406,15 +418,16 @@ public class smbscan {
           }
           catch( SmbException se ) {
             read_test = "No Read Access";
-            System.out.print(" READ: No Read Access");
+            System.out.print(" READ: "+read_test);
           }
           
+          String write_test = "";
           if (wt == 1) {
             /* ------------------------------------------------------------ *
              * Try to write a dummy file into the share, and afterwards try *
              * deleting it. This confirms the write access to the share.    *
              * ------------------------------------------------------------ */
-            String write_test = "";
+
             String rdnfile = "test"+System.currentTimeMillis()+".txt";
             try {
               String testurl = "smb://"+domain+";"+user+":"+pass+"@"+ip+"/"+share_name+"/"+rdnfile;
@@ -429,17 +442,13 @@ public class smbscan {
               write_test = "No Write Access";
             }
             System.out.println(" "+write_test);
-          
-            /* Here we do the final line output to file */
-            if(csv==1) { bw.write(hostline+separator+share_url+separator
-                                +export_sec+separator+folder_sec+separator+read_test+separator+write_test+"\n"); }
-            else  { bw.write(hostline+" SHARE: "+share_name+" EXPORT: "
-                            +export_sec+" FOLDER: "+folder_sec+" READ: "+read_test+" WRITE: "+write_test+"\n"); }
           } // end if condition write test
-          else {
-            System.out.println();
-            
-          }  
+          System.out.println();
+          /* Here we do the final line output to file */
+          if(csv==1) { bw.write(hostline+separator+share_url+separator
+                               +export_sec+separator+folder_sec+separator+read_test+separator+write_test+"\n"); }
+          else { bw.write(hostline+" SHARE: "+share_name+" EXPORT: "
+                          +export_sec+" FOLDER: "+folder_sec+" READ: "+read_test+" WRITE: "+write_test+"\n"); }
         } // end if condition obj = fileshare
       } // end for loop over share objects
       host++;
