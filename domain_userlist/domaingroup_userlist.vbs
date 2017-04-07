@@ -17,7 +17,7 @@
 '
 ' LDAP://192.168.1.9/DC=frank4dd,DC=com
 '
-' SELECT member FROM 'LDAP://192.168.1.9/DC=japan,DC=corp,DC=manulife,DC=com'
+' SELECT member FROM 'LDAP://192.168.1.9/DC=frank4dd,DC=com'
 ' WHERE CN='Domain Admins'
 ' 1 User Name: John Smith       Status: Active
 ' 2 User Name: John Doe         Status: Active
