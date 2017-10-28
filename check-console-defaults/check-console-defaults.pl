@@ -1,12 +1,15 @@
-#!C:\Program Files\perl\bin\Perl.exe -w
+#!/usr/bin/perl -w
 # ------------------------------------------------------------ #
-# check_console_defaults.pl v1.0 20121020 frank4dd  GPLv3      #
+# check_console_defaults.pl v1.1 20171028 frank4dd  GPLv3      #
 #                                                              #
 # This script checks for reachable server management console   #
 # systems. Access to these systems should be restricted, and   #
 # default username/passwords should have changed immediately.  #
 #                                                              #
 # Works with iDRAC v6, CIMC v1.2, iLO v2                       #
+#                                                              #
+# v1.1 changes: Fix SSL problems for old certs with outdated   #
+#               algorithms such as SHA1 or MD5                 #
 # ------------------------------------------------------------ #
 use Net::Ping;
 use LWP::UserAgent;
@@ -82,12 +85,15 @@ while($host<=$end_host) {
   # Cisco CIMC web interface delivers content with compression,  #
   # we need to accept & handle the gzip-encoded server response. #
   # ------------------------------------------------------------ #
-  my $ua = LWP::UserAgent->new(ssl_opts =>{verify_hostname => 0});
-  $ua->timeout(2);
+  my $ua = LWP::UserAgent->new(ssl_opts =>{verify_hostname => 0, SSL_verify_mode => 0x00});
+  $ua->timeout(5);
   my $can_accept = HTTP::Message::decodable;
 
   my $https_url = "https://".$ip."/";
   my $ssl_response = $ua->get($https_url, 'Accept-Encoding' => $can_accept,);
+
+  # debug
+  #print "Response: " . $ssl_response->status_line;
 
   if(! $ssl_response->is_success) {
     print "No SSL web page found.\n";
@@ -127,8 +133,8 @@ sub check_cimc_login {
   # ----------------------------------------------------------- #
   my $login_ok =   "<authResult>0</authResult> <forwardUrl>index.html</forwardUrl> </root>";
   my $login_fail = "<authResult>1</authResult> <forwardUrl>index.html</forwardUrl>  <errorMsg></errorMsg></root>";
-  my $ua = LWP::UserAgent->new(ssl_opts =>{verify_hostname => 0});
-  $ua->timeout(2);
+  my $ua = LWP::UserAgent->new(ssl_opts =>{verify_hostname => 0, SSL_verify_mode => 0x00});
+  $ua->timeout(5);
   my $can_accept = HTTP::Message::decodable;
 
   my $login_url = "https://".$ip."/data/login";
@@ -136,7 +142,7 @@ sub check_cimc_login {
   my $logindata = $login_res->decoded_content(); 
 
   # debug
-  # print "\n".$logindata."\n";
+  #print "\n".$logindata."\n";
 
   if($logindata =~ m/$login_ok/) {
     print "...Default Login success!";
@@ -164,8 +170,8 @@ sub check_idrac_login {
   my $login_ok =   "<authResult>0</authResult> <forwardUrl>index.html</forwardUrl> </root>";
   my $login_fail = "<authResult>1</authResult> <forwardUrl>index.html</forwardUrl>  <errorMsg></errorMsg></root>";
 
-  my $ua = LWP::UserAgent->new(ssl_opts =>{verify_hostname => 0});
-  $ua->timeout(2);
+  my $ua = LWP::UserAgent->new(ssl_opts =>{verify_hostname => 0, SSL_verify_mode => 0x00});
+  $ua->timeout(5);
   my $can_accept = HTTP::Message::decodable;
   my $login_url = "https://".$ip."/data/login";
 
@@ -176,7 +182,7 @@ sub check_idrac_login {
   my $logindata = $login_res->decoded_content(); 
 
   # debug
-  # print "\n".$logindata."\n";
+  #print "\n".$logindata."\n";
 
   if($logindata =~ m/$login_ok/) {
     print "...Default Login success!";
