@@ -1,38 +1,64 @@
 #!/usr/bin/perl -w
 # ------------------------------------------------------------ #
-# check_console_defaults.pl v1.1 20171028 frank4dd  GPLv3      #
+# check_console_defaults.pl v1.2 20171030 frank4dd  GPLv3      #
 #                                                              #
 # This script checks for reachable server management console   #
 # systems. Access to these systems should be restricted, and   #
 # default username/passwords should have changed immediately.  #
 #                                                              #
-# Works with iDRAC v6, CIMC v1.2, iLO v2                       #
+# Works with iDRAC v6 v7, CIMC v1.2, iLO v2                    #
 #                                                              #
-# v1.1 changes: Fix SSL problems for old certs with outdated   #
-#               algorithms such as SHA1 or MD5                 #
+# v1.0 20121020 initial release                                #
+# v1.1 20171030 add iDRAC7, fix HTTPS error 500 "cert failed"  #
+# v1.2 20171101 add the function to use an external ip srcfile #
 # ------------------------------------------------------------ #
 use Net::Ping;
 use LWP::UserAgent;
 
-# ------------------------------------------------------------ #
-# Below is the network range we will verify. This is typically #
-# a class-C network, sometimes a smaller subnet range. We give #
-# the values on the command line, but we could also hardcode.. #
-# my $basenet = "192.168.240";                                 #
-# my $start_host = 1;                                          #
-# my $end_host = 25;                                           #
-# ------------------------------------------------------------ #
+# Some boards respond slowly, wait up to 20 secs for response
+my $http_timeout = 20; 
+
 $num_args = $#ARGV + 1;
-if ($num_args != 3) {
-  print "Usage: check_console_defaults.pl <network-base> <start_ip> <end_ip>\n\n";
-  print "Example: check_console_defaults.pl 192.168.1 20 44\n";
-  print "This will run the check on these IP's: 192.168.1.20-44.\n";
-  exit -1;
+my @ip_list;
+
+if ($ARGV[0] eq "-f") {
+  if ($num_args != 2) { usage(); }
+  # ------------------------------------------------------------ #
+  # We have been called with a file containing the IP to check.  #
+  # ------------------------------------------------------------ #
+  my $filename = $ARGV[1];
+  open (FH, "< $filename") or die "Error: Can't open $filename for read: $!";
+  chomp (@ip_list = <FH>);
+  close FH or die "Cannot close $filename: $!";
+}
+else {
+  if ($num_args != 3) { usage(); }
+  # ------------------------------------------------------------ #
+  # Below is the network range we will verify. This is typically #
+  # a class-C network, sometimes a smaller subnet range. We give #
+  # the values on the command line, but we could also hardcode.. #
+  # my $basenet = "192.168.240";                                 #
+  # my $start_host = 1;                                          #
+  # my $end_host = 25;                                           #
+  # ------------------------------------------------------------ #
+  my $basenet=$ARGV[0];
+  my $start_host=$ARGV[1];
+  my $end_host=$ARGV[2];
+  my $host = $start_host;
+  my $i = 0;
+
+  while($host<=$end_host) {
+    $ip = $basenet.".".$host;
+    $ip_list[$i] = $ip;
+    $host++;
+    $i++;
+  }
 }
 
-my $basenet=$ARGV[0];
-my $start_host=$ARGV[1];
-my $end_host=$ARGV[2];
+if (@ip_list == 0) {
+  print "Error: No IP's to process.\n";
+  exit 1;
+}
 
 # ------------------------------------------------------------ #
 # Below are the HTML signatures for server management console  #
@@ -44,7 +70,7 @@ my $end_host=$ARGV[2];
 # containing a conditional javasacript redirect to support SSO.#
 # ------------------------------------------------------------ #
 my $cimc_id = "<title>Cisco Integrated Management Controller Login</title>";
-my $idrac_id = "          top.document.location.href = \"/sclogin.html\";";
+my $idrac_id = "top.document.location.href = \"/sclogin.html\";";
 my $hpilo_id = "<TITLE>HP Integrated Lights-Out 2 Login</TITLE>";
 
 # ------------------------------------------------------------ #
@@ -57,9 +83,7 @@ my $hpilo_id = "<TITLE>HP Integrated Lights-Out 2 Login</TITLE>";
 # HP iLO default:     Administrator/serial-tag-code            #
 # ------------------------------------------------------------ #
 
-my $host = $start_host;
-while($host<=$end_host) {
-  $ip = $basenet.".".$host;
+foreach $ip(@ip_list) {
   print "Checking $ip... ";
 
   # ------------------------------------------------------------ #
@@ -86,7 +110,7 @@ while($host<=$end_host) {
   # we need to accept & handle the gzip-encoded server response. #
   # ------------------------------------------------------------ #
   my $ua = LWP::UserAgent->new(ssl_opts =>{verify_hostname => 0, SSL_verify_mode => 0x00});
-  $ua->timeout(5);
+  $ua->timeout($http_timeout);
   my $can_accept = HTTP::Message::decodable;
 
   my $https_url = "https://".$ip."/";
@@ -108,7 +132,7 @@ while($host<=$end_host) {
     print "CIMC found! ";
     &check_cimc_login;
   } 
-  elsif($ssl_response->decoded_content =~ m/$idrac_id/i) {
+  elsif($ssl_response->decoded_content =~ m/$idrac_id/) {
     print "iDrac found! ";
     &check_idrac_login;
   }
@@ -134,7 +158,7 @@ sub check_cimc_login {
   my $login_ok =   "<authResult>0</authResult> <forwardUrl>index.html</forwardUrl> </root>";
   my $login_fail = "<authResult>1</authResult> <forwardUrl>index.html</forwardUrl>  <errorMsg></errorMsg></root>";
   my $ua = LWP::UserAgent->new(ssl_opts =>{verify_hostname => 0, SSL_verify_mode => 0x00});
-  $ua->timeout(5);
+  $ua->timeout($http_timeout);
   my $can_accept = HTTP::Message::decodable;
 
   my $login_url = "https://".$ip."/data/login";
@@ -167,11 +191,12 @@ sub check_idrac_login {
   # ----------------------------------------------------------- #
   # The login attempt receives two xml responses for OK & FAIL: #
   # ----------------------------------------------------------- #
-  my $login_ok =   "<authResult>0</authResult> <forwardUrl>index.html</forwardUrl> </root>";
-  my $login_fail = "<authResult>1</authResult> <forwardUrl>index.html</forwardUrl>  <errorMsg></errorMsg></root>";
+  my $login_ok =   "<authResult>0</authResult> <forwardUrl>index.html";
+  my $login_fail1 = "<authResult>1</authResult>.*<forwardUrl>index.html</forwardUrl>  <errorMsg></errorMsg></root>";
+  my $login_fail2 = "<title>401 Authorization Required</title>";
 
   my $ua = LWP::UserAgent->new(ssl_opts =>{verify_hostname => 0, SSL_verify_mode => 0x00});
-  $ua->timeout(5);
+  $ua->timeout($http_timeout);
   my $can_accept = HTTP::Message::decodable;
   my $login_url = "https://".$ip."/data/login";
 
@@ -182,15 +207,28 @@ sub check_idrac_login {
   my $logindata = $login_res->decoded_content(); 
 
   # debug
-  #print "\n".$logindata."\n";
+  # print "\n".$logindata."\n";
 
   if($logindata =~ m/$login_ok/) {
     print "...Default Login success!";
   }
-  elsif($logindata =~ m/$login_fail/) {
+  elsif(($logindata =~ m/$login_fail1/) || ($logindata =~ m/$login_fail2/)) {
     print "...Default Login failed.";
   }
   else {
     print "Unknown response.";
   }
+}
+
+# ------------------------------------------------------------ #
+# This function prints the programs usage and help message     #
+# ------------------------------------------------------------ #
+sub usage {
+  print "Usage-1: check_console_defaults.pl <network-base> <start_ip> <end_ip>\n";
+  print "Usage-2: check_console_defaults.pl -f <ip-address-file>\n\n";
+  print "Example: check_console_defaults.pl 192.168.1 20 44\n";
+  print "This will run the check on these IP's: 192.168.1.20-44.\n\n";
+  print "Example: check_console_defaults.pl -f ./testfile\n";
+  print "This will run the check on IP's listed in testfile, one per line.\n\n";
+  exit 1;
 }
