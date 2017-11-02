@@ -16,6 +16,17 @@ Checking 192.168.24.6... Host 192.168.24.6 alive... CIMC found! ...Default Login
 Checking 192.168.24.7... Host does not exist.
 ...</pre>
 
+### check-nfs-access
+
+[check-nfs-access](check-nfs-access): NFS is still a common file sharing protocol for midrange UNIX systems. This script checks for world-readable file shares that may inadvertantly expose data. Although NFS is no longer a common protocol and shares would be unlikely visible to normal Wintel-based end users, it takes little effort to anyone looking with intent.
+
+<pre>root@lts1604:/home/fm/sf_VM_Shared/code/Perl# ./check-nfs-access.pl -f testiplist 
+Checking 192.168.30.130... Host 192.168.30.130 alive...  share: /export/images (everyone) share: /export/spot (everyone)
+Checking 192.168.30.131... Host 192.168.30.131 alive...  share: /export/images (everyone) share: /export/spot (everyone)
+Checking 192.168.30.139... Host 192.168.30.139 alive...  share: /export/images (everyone) share: /export/spot (everyone)
+Checking 192.168.34.242... Host 192.168.34.242 does not exist.
+...</pre>
+
 ### domain-userlist
 
 [domain_userlist](domain_userlist): By default, Windows allows allows any domain user to retrieve full Windows Domain information about all users, groups, and other AD information. By scripting, we can obtain almost all information available in Active Directory. This Javascript program downloads the full list of Domain users, together with their password settings into a CSV file for easy user sorting. It works for acount extraction within the local domain and with trusted domains, common in larger environments.
