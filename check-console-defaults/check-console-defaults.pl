@@ -15,7 +15,9 @@
 use Net::Ping;
 use LWP::UserAgent;
 
-# Some boards respond slowly, wait up to 20 secs for response
+# ------------------------------------------------------------ #
+# Some boards respond slowly, wait up to 20 secs for response. #
+# ------------------------------------------------------------ #
 my $http_timeout = 20; 
 
 $num_args = $#ARGV + 1;

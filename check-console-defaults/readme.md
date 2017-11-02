@@ -14,6 +14,8 @@ One potentially fatal mistake is to connect the server's management console into
 
 `check_console_defaults.pl [network] [start-ip] [end-ip]`  
 
+`check_console_defaults.pl -f [ip_list_file]`
+
 #### Options:
 
 [network]  
@@ -24,6 +26,9 @@ One potentially fatal mistake is to connect the server's management console into
 
 [end-ip]  
       The last host to check. The program adds this number to the network octets to stop the loop. "254" will  translate together with the network 192.168.1 to 192.168.1.254 as the last IP to be checked.
+
+-f [ip_list_file]
+      Instead of a network range, a file name containing the IPs to be checked can be given as an argument. The file should have the IP listed one per line.
 
 #### Usage Example:
 
@@ -54,6 +59,6 @@ Checking 192.168.24.80... Host does not exist.
 
 #### Notes:
 
-If this script runs under Windows 7, local admin rights are required to for Perl to open ICMP sockets. Open the commandline console with right-click, selecting "Run as administrator". 
+For Perl to open ICMP sockets to do the initial ping, the script requires root (Unix) or local administrator (Windows) privileges. If this script runs under Windows, open the commandline console with right-click, selecting "Run as administrator". In Unix/Linux, run it through "sudo".
 
 See also http://fm4dd.com/security/check-console-defaults.htm
