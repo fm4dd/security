@@ -21,11 +21,25 @@ Checking 192.168.24.7... Host does not exist.
 [check-nfs-access](check-nfs-access): NFS is still a common file sharing protocol for midrange UNIX systems. This script checks for world-readable file shares that may inadvertantly expose data. Although NFS is no longer a common protocol and shares would be unlikely visible to normal Wintel-based end users, it takes little effort to anyone looking with intent.
 
 <pre>root@lts1604:/home/fm/sf_VM_Shared/code/Perl# ./check-nfs-access.pl -f testiplist 
-Checking 192.168.30.130... Host 192.168.30.130 alive...  share: /export/images (everyone) share: /export/spot (everyone)
-Checking 192.168.30.131... Host 192.168.30.131 alive...  share: /export/images (everyone) share: /export/spot (everyone)
-Checking 192.168.30.139... Host 192.168.30.139 alive...  share: /export/images (everyone) share: /export/spot (everyone)
+Checking 192.168.30.130... Host 192.168.30.130 alive... NFS access denied.
+Checking 192.168.30.130... Host 192.168.30.130 alive... share: /export/images (everyone) share: /export/spot (everyone)
+Checking 192.168.30.131... Host 192.168.30.131 alive... share: /export/images (everyone) share: /export/spot (everyone)
+Checking 192.168.30.139... Host 192.168.30.139 alive... share: /export/images (everyone) share: /export/spot (everyone)
 Checking 192.168.34.242... Host 192.168.34.242 does not exist.
 ...</pre>
+
+### check-snmp-access
+
+[check-snmp-access](check-snmp-access): Many professional-grade infrastructure devices such as switches, printers, or video equipment implement the SNMP protocol for monitoring. Vendors often enable it by default for out-of-the-box functionality, using the SNMPv1 and v2c default community strings ("public"). For security conscious environments, this can be a problem since it aids adversaries through effortless information gathering. This Perl script automates the large-scale identification and verification, e.g. to confirm remediation efforts.
+
+<pre>root@lts1604:/home/fm/sf_VM_Shared/code/Perl# ./check-snmp-access.pl -f testiplist
+Checking 192.168.250.96... Host 192.168.250.96 alive... No SNMP access.
+Checking 192.168.37.25... Host 192.168.37.25 alive... SNMP found... Descr: Product: GW 4 FXO;SW Version: 6.00A.037.003
+Checking 192.168.37.37... Host 192.168.37.37 alive... SNMP found... Descr: IBM OS/400 V7R1M0
+Checking 192.168.37.38... Host 192.168.37.38 alive... SNMP found... Descr: IBM OS/400 V7R1M0
+Checking 192.168.37.39... Host 192.168.37.39 alive... SNMP found... Descr: IBM OS/400 V7R1M0
+Checking 192.168.10.228... Host 192.168.10.228 does not exist.
+... </pre>
 
 ### domain-userlist
 
@@ -39,6 +53,16 @@ Checking 192.168.34.242... Host 192.168.34.242 does not exist.
 [smbscan](smbscan): Windows file sharing is the most common way for file exchange between users in a office network. Security however usually is lost in everyday use. As a result, sensitive files get shared with everyone. This simple Java program can run anywhere to identify open file shares, and determines whats is behind them. The automation supports a quicker idenitifcation of security problems, and speeds up the lock down of sensitive information.
 
 ![](smbscan/images/smbscan-example.png)
+
+### Get-SymantecDefinitionDate
+
+[symantec-def-date](symantec-def-date): There are situations were its crucial to know if the antivirus protection is in place, and to check that the configuration includes the exact virus signature that ensures protection from a specific threat. The Antivirus management tools can do that certainly, but in a outsourced world work goes to the cheapest place, which then turns out to be unable to do even simple tasks. Time again we are left with nothing else but our laptops, and this script does its job in a pinch.
+
+<pre>D:\code\VB>cscript Get-SymantecDefinitionDate.vbs 10.253.28.102
+Microsoft (R) Windows Script Host Version 5.8
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+Host: 127.0.0.1 Symantec Endpoint Protection AV Pattern File Date: 2017-11-08 Revision: 6</pre>
 
 ### Notes
 

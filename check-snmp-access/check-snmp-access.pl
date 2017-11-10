@@ -1,27 +1,30 @@
 #!/usr/bin/perl -w
 # ------------------------------------------------------------ #
-# check_nfs_access.pl v1.1 20171109 frank4dd  GPLv3            #
+# check_snmp_access.pl v1.0 20171102 frank4dd  GPLv3           #
 #                                                              #
-# This script checks for servers with accessible nfs file      #
-# shares. Access to these shares should be restricted.         #
+# This script checks for servers with accessible SNMP          #
+# service, using the default community string "public".        #
+# SNMP should be protected from general access through         #
+# non-defaut community strings and host restrictions,          #
+# ideally even through setup of v3 auth and encryption.        #
 #                                                              #
 # v1.0 20171102 initial release                                #
-# v1.1 20171109 add RPC response handling : Unable to receive; #
-#               errno = Connection refused                     #
 # ------------------------------------------------------------ #
 use Net::Ping;
-use POSIX ":sys_wait_h";
+use Net::SNMP;
 
-# Some boards respond slowly, wait up to 20 secs for response
-my $nfs_timeout=20;
-my $nfs_warn=-1;
-my $writemode=0;
-my $help=0;
+#my @query_oid = ( "1.3.6.1.2.1.1.1.0" ); # SNMP MIB-2 System sysDescr
+my @query_oid = ( "1.3.6.1.2.1.1.5.0" ); # SNMPv2-MIB::sysName.0
+#my @query_oid = ( "1.3.6.1.2.1.25.3.2.1.3.1" ); # HOST-RESOURCES-MIB::hrDeviceDescr.1
+my $port = 161;
+my $community = "public";
+my $snmp_timeout = 2;
+my $ping_timeout = 1;
 
 $num_args = $#ARGV + 1;
 my @ip_list;
 
-if ($ARGV[0] eq "-f") {
+if ($ARGV[0] && $ARGV[0] eq "-f") {
   if ($num_args != 2) { usage(); }
   # ------------------------------------------------------------ #
   # We have been called with a file containing the IP to check.  #
@@ -70,8 +73,7 @@ foreach $ip(@ip_list) {
   # set to 1 second only, providing a fast scan (ptimeout = 1;). #
   # ------------------------------------------------------------ #
   my $p=Net::Ping->new('icmp');
-  my $ptimeout = 1;
-  if ($p->ping($ip, $ptimeout)) {
+  if ($p->ping($ip, $ping_timeout)) {
     print "Host $ip alive... ";
   } else {
     print "Host $ip does not exist.\n";
@@ -79,32 +81,48 @@ foreach $ip(@ip_list) {
   }
   $p->close();
 
-  open my $NFS, "/sbin/showmount -e $ip 2>/dev/null|"; 
-  waitpid(-1, 0); # wait for showmount process to finish
+  # ------------------------------------------------------------ #
+  # Here we make the SNMP query and see if the device responds.  #
+  # ------------------------------------------------------------ #
+  # SNMPv1 Login, get a session
+  ($session, $error) = Net::SNMP->session(
+    -hostname  => $ip,
+    -version   => 1,
+    -community => $community,
+    -port      => $port,
+    -timeout   => $snmp_timeout
+  );
 
-  if ($? == 0) {
-    chomp (@nfs_list = <$NFS>);
-    foreach $share(@nfs_list) {
-      if($share =~ m/\(everyone\)/) {
-        $share =~ s/\t/ /g; # replace tabs with space
-        $share =~ s/ +/ /g; # replace multiple space with one
-        print "share: " .$share;
-      }
-    }
-    print "\n";
+  if (!defined($session)) {
+    printf("Error creating SNMP session: %s.\n", $error);
+    next;
   }
-  else { print "NFS access denied.\n"; }
+
+  # query the OID here
+  my $result = $session->get_request(-varbindlist => \@query_oid);
+
+  # check the access result
+  if (!defined($result)) {
+    if ($session->error =~ m/No response from remote host/i)
+      { printf("No SNMP access.\n"); }
+    else
+      { printf("SNMP found... Error: %s.\n", $session->error); }
+    $session->close;
+    next;
+  }
+  $session->close;
+  print "SNMP found... Descr: ".$result->{$query_oid[0]}."\n";
 }
 
 # ------------------------------------------------------------ #
 # This function prints the programs usage and help message     #
 # ------------------------------------------------------------ #
 sub usage {
-  print "Usage-1: check_nfs_access.pl <network-base> <start_ip> <end_ip>\n";
-  print "Usage-2: check_nfs_access.pl -f <ip-address-file>\n\n";
-  print "Example: check_nfs_access.pl 192.168.1 20 44\n";
+  print "Usage-1: check_snmp_access.pl <network-base> <start_ip> <end_ip>\n";
+  print "Usage-2: check_snmp_access.pl -f <ip-address-file>\n\n";
+  print "Example: check_snmp_access.pl 192.168.1 20 44\n";
   print "This will run the check on these IP's: 192.168.1.20-44.\n\n";
-  print "Example: check_nfs_access.pl -f ./testfile\n";
+  print "Example: check_snmp_access.pl -f ./testfile\n";
   print "This will run the check on IP's listed in testfile, one per line.\n\n";
   exit 1;
 }
