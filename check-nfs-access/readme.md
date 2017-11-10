@@ -35,22 +35,22 @@ NFS is still a common file sharing protocol for midrange UNIX systems. This scri
 Running the program:
 
 <pre>root@lts1604:/home/fm/sf_VM_Shared/code/Perl# ./check-nfs-access.pl -f testiplist 
-Checking 192.168.30.130... Host 192.168.30.130 alive...  share: /export/images (everyone) share: /export/spot (everyone)
-Checking 192.168.30.131... Host 192.168.30.131 alive...  share: /export/images (everyone) share: /export/spot (everyone)
-Checking 192.168.30.139... Host 192.168.30.139 alive...  share: /export/images (everyone) share: /export/spot (everyone)
-Checking 192.168.30.141... Host 192.168.30.141 alive...  share: /export/images (everyone) share: /export/spot (everyone)
-Checking 192.168.30.146... Host 192.168.30.146 alive...  share: /export/images (everyone) share: /export/spot (everyone)
-Checking 192.168.30.56... Host 192.168.30.56 alive...  share: /export/images (everyone) share: /export/spot (everyone)
-Checking 192.168.30.57... Host 192.168.30.57 alive...  share: /export/images (everyone) share: /export/spot (everyone)
-Checking 192.168.30.59... Host 192.168.30.59 alive...  share: /export/images (everyone) share: /export/spot (everyone)
-Checking 192.168.30.62... Host 192.168.30.62 alive...  share: /export/images (everyone) share: /export/spot (everyone)
-Checking 192.168.31.1... Host 192.168.31.1 alive...  share: /export/images (everyone) share: /export/spot (everyone)
-Checking 192.168.31.123... Host 192.168.31.123 alive...  share: /export/images (everyone) share: /export/spot (everyone)
+Checking 192.168.30.130... Host 192.168.30.130 alive... NFS access denied.
+Checking 192.168.30.131... Host 192.168.30.131 alive... share: /export/images (everyone) share: /export/spot (everyone)
+Checking 192.168.30.139... Host 192.168.30.139 alive... share: /export/images (everyone) share: /export/spot (everyone)
+Checking 192.168.30.141... Host 192.168.30.141 alive... share: /export/images (everyone) share: /export/spot (everyone)
+Checking 192.168.30.146... Host 192.168.30.146 alive... share: /export/images (everyone) share: /export/spot (everyone)
+Checking 192.168.30.56... Host 192.168.30.56 alive... share: /export/images (everyone) share: /export/spot (everyone)
+Checking 192.168.30.57... Host 192.168.30.57 alive... share: /export/images (everyone) share: /export/spot (everyone)
+Checking 192.168.30.59... Host 192.168.30.59 alive... share: /export/images (everyone) share: /export/spot (everyone)
+Checking 192.168.30.62... Host 192.168.30.62 alive... share: /export/images (everyone) share: /export/spot (everyone)
+Checking 192.168.31.1... Host 192.168.31.1 alive... share: /export/images (everyone) share: /export/spot (everyone)
+Checking 192.168.31.123... Host 192.168.31.123 alive... share: /export/images (everyone) share: /export/spot (everyone)
 Checking 192.168.31.3... Host 192.168.31.3 alive...  share: /export/images (everyone) share: /export/spot (everyone)
-Checking 192.168.31.35... Host 192.168.31.35 alive...  share: /export/images (everyone) share: /export/spot (everyone)
-Checking 192.168.31.46... Host 192.168.31.46 alive...  share: /export/images (everyone) share: /export/spot (everyone)
-Checking 192.168.31.56... Host 192.168.31.56 alive...  share: /export/images (everyone) share: /export/spot (everyone)
-Checking 192.168.31.85... Host 192.168.31.85 alive...  share: /export/images (everyone) share: /export/spot (everyone)
+Checking 192.168.31.35... Host 192.168.31.35 alive... share: /export/images (everyone) share: /export/spot (everyone)
+Checking 192.168.31.46... Host 192.168.31.46 alive... share: /export/images (everyone) share: /export/spot (everyone)
+Checking 192.168.31.56... Host 192.168.31.56 alive... share: /export/images (everyone) share: /export/spot (everyone)
+Checking 192.168.31.85... Host 192.168.31.85 alive... share: /export/images (everyone) share: /export/spot (everyone)
 Checking 192.168.34.241... Host 192.168.34.241 does not exist.
 Checking 192.168.34.242... Host 192.168.34.242 does not exist.
 Checking 192.168.34.243... Host 192.168.34.243 does not exist.
