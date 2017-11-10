@@ -61,4 +61,5 @@ Checking 192.168.34.244... Host 192.168.34.244 does not exist.
 
 For Perl to open ICMP sockets to do the initial ping, the script requires root (Unix) or local administrator (Windows) privileges. If this script runs under Windows, open the commandline console with right-click, selecting "Run as administrator". In Unix/Linux, run it through "sudo".
 
+This script uses the 'showmount -e' system command, which in turn requires the NFS tools package (nfs-common) to be installed. For Debian/Ubuntu, this would do: 'sudo apt-get install nfs-common'.
 See also http://fm4dd.com/security
