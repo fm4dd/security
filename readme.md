@@ -5,7 +5,7 @@ http://fm4dd.com/security/
 
 ### check-console-defaults
 
-[check-console-defaults](check-console-defaults): One potentially fatal mistake is to connect the server's management console into an end-user reachable network, unconfigured and without further protection. It may sound incredible, but in a real-life case, several dozens of PRD servers turned out to be accessible that way.  This Perl script automates the large-scale identification of console ports running on vendor defaults.
+[check-console-defaults](check-console-defaults): One potentially fatal mistake is to connect the server's management console (BMC) into an end-user reachable network, unconfigured and without further protection. It may sound incredible, but in a real-life case, several dozens of PRD servers turned out to be accessible that way.  This Perl script automates the large-scale identification of console ports running on vendor defaults.
 
 <pre>D:\Code> check_console_defaults.pl 192.168.24 1 254
 ...
@@ -14,6 +14,18 @@ Checking 192.168.24.4... Host 192.168.24.4 alive... CIMC found! ...Default Login
 Checking 192.168.24.5... Host 192.168.24.5 alive... CIMC found! ...Default Login success!
 Checking 192.168.24.6... Host 192.168.24.6 alive... CIMC found! ...Default Login failed.
 Checking 192.168.24.7... Host does not exist.
+...</pre>
+
+### check-ipmi-access
+
+[check-ipmi-access](check-ipmi-access): The Intelligent Platform Management Interface (IPMI) is a set of computer interface specifications that provides management and monitoring capabilities independently of the host system. It is often embedded with a BMC (Baseboard Management Console, see above). Server vendors such as Cisco or HP had their respective BMC boards (CIMC and ILO) run the IPMI service by default, which listens on UDP port 623. In 2013, a number of vulnerabilities surfaced and turned IPMI into a risk that subsequently lead to it preferably disabled. This script looks for IPMI in a range of IP's as a quick way for verification and reporting. 
+
+<pre>root@lts1604:/home/fm/sf_VM_Shared/code/Perl# ./check-ipmi-access.pl -f testiplist
+Checking 192.168.12.125... Host 192.168.12.125 alive... No IPMI access... Error issuing Get Channel Authentication Capabilities request
+Checking 192.168.12.131... Host 192.168.12.131 alive...  IPMI found... sel-output: Version : 1.5 (v1.5, v2 compliant)
+Checking 192.168.12.154... Host 192.168.12.154 alive...  IPMI found... sel-output: Version : 1.5 (v1.5, v2 compliant)
+Checking 192.168.12.164... Host 192.168.12.164 alive...  IPMI found... sel-output: Version : 1.5 (v1.5, v2 compliant)
+Checking 192.168.12.26... Host 192.168.12.26 alive...  IPMI found... RAKP 2 message indicates an error : unauthorized name
 ...</pre>
 
 ### check-nfs-access
