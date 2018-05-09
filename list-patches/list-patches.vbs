@@ -100,7 +100,7 @@ DataList.MoveFirst
 ' output the (sorted) dataset
 '                   & DataList.Fields.Item("Description") & "," _
 '===========================================================================
-stdout.WriteLine "Installation Date, Computer, Description, Hot Fix ID, Installed By:"
+stdout.WriteLine "Installation Date, Computer, HotFix ID, Description, Installed By:"
 
 Do While DataList.EOF = FALSE
     stdout.WriteLine DataList.Fields.Item("InstalledOn") & "," _ 

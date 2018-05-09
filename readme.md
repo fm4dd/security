@@ -79,6 +79,18 @@ Host: 127.0.0.1 Symantec Endpoint Protection AV Pattern File Date: 2017-11-08 Re
 ### list-patches
 
 [list-patches](list-patches): A VB script that lists up all installed patches (KB) on a Windows PC. The patches are ordered by installation date, and the CSV output can easily imported into Excel.
+
+<pre>D:\code\VB>cscript list-patches.vbs
+Microsoft (R) Windows Script Host Version 5.8
+Copyright (C) Microsoft Corporation. All rights reserved.
+
+Running list-patches.vbs
+===================================================================
+Installation Date, Computer, HotFix ID, Description, Installed By:
+2018/04/20,PCAH86899,KB3138612,Update,NT AUTHORITY\SYSTEM
+...
+2018/05/08,PCAH86899,KB4093118,Security Update,NT AUTHORITY\SYSTEM</pre>
+
 ### Notes
 
 See also http://fm4dd.com/security/
